@@ -50,6 +50,7 @@ let idVoice = null;
 function pickVoice() { try { idVoice = speechSynthesis.getVoices().find((v) => /^id/i.test(v.lang)) || null; } catch { /* */ } }
 if (typeof speechSynthesis !== 'undefined') { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
 
+export function getCtx() { ctx = ctx || new AudioContext(); return ctx; }
 export function unlockAudio() {
   try { ctx = ctx || new AudioContext(); ctx.resume(); } catch { /* */ }
   try { speechSynthesis.speak(new SpeechSynthesisUtterance(' ')); } catch { /* */ }

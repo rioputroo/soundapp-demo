@@ -4,7 +4,7 @@
 import { build } from 'esbuild';
 import { readFileSync, writeFileSync, mkdirSync, copyFileSync } from 'fs';
 
-const out = await build({ entryPoints: ['src/main.js'], bundle: true, format: 'iife', target: 'es2020', write: false, minify: false, legalComments: 'none' });
+const out = await build({ entryPoints: ['src/main.js'], bundle: true, format: 'iife', target: 'es2020', write: false, minify: false, loader: { '.wav': 'dataurl' }, legalComments: 'none' });
 const js = out.outputFiles[0].text.replace(/<\/script/gi, '<\\/script');
 const css = readFileSync('src/styles.css', 'utf8');
 const page = readFileSync('src/template.html', 'utf8').replace('/*__CSS__*/', () => css).replace('/*__JS__*/', () => js);

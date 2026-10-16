@@ -382,3 +382,6 @@ details.manual ol { margin: 6px 0 0; padding-left: 18px; font-size: 12px; displa
 .intro-card p { margin: 0; color: var(--ink-2); }
 .intro-card ol { margin: 0; padding-left: 18px; display: grid; gap: 6px; color: var(--ink-2); font-size: 12.5px; }
 .intro-card .btn { align-self: flex-start; }
+
+#fcm-card .tbl code { white-space: pre-wrap; word-break: break-all; font-size: 11px; }
+#fcm-card .tbl td, #fcm-card .tbl th { min-width: 0; } #fcm-card .tbl td:nth-child(1) { white-space: nowrap; }

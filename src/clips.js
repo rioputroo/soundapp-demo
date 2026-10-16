@@ -1,0 +1,51 @@
+// Klip suara asli dari audio-nominal-rn 0.12.0 (2 suara × 23 kata), disematkan sebagai data URL.
+import c1_belas from './clips/1/belas.wav';
+import c1_delapan from './clips/1/delapan.wav';
+import c1_diterima from './clips/1/diterima.wav';
+import c1_dua from './clips/1/dua.wav';
+import c1_empat from './clips/1/empat.wav';
+import c1_enam from './clips/1/enam.wav';
+import c1_juta from './clips/1/juta.wav';
+import c1_lima from './clips/1/lima.wav';
+import c1_miliar from './clips/1/miliar.wav';
+import c1_nol from './clips/1/nol.wav';
+import c1_paydia from './clips/1/paydia.wav';
+import c1_puluh from './clips/1/puluh.wav';
+import c1_ratus from './clips/1/ratus.wav';
+import c1_ribu from './clips/1/ribu.wav';
+import c1_rupiah from './clips/1/rupiah.wav';
+import c1_satu from './clips/1/satu.wav';
+import c1_sebelas from './clips/1/sebelas.wav';
+import c1_sembilan from './clips/1/sembilan.wav';
+import c1_sepuluh from './clips/1/sepuluh.wav';
+import c1_seratus from './clips/1/seratus.wav';
+import c1_seribu from './clips/1/seribu.wav';
+import c1_tiga from './clips/1/tiga.wav';
+import c1_tujuh from './clips/1/tujuh.wav';
+import c2_belas from './clips/2/belas.wav';
+import c2_delapan from './clips/2/delapan.wav';
+import c2_diterima from './clips/2/diterima.wav';
+import c2_dua from './clips/2/dua.wav';
+import c2_empat from './clips/2/empat.wav';
+import c2_enam from './clips/2/enam.wav';
+import c2_juta from './clips/2/juta.wav';
+import c2_lima from './clips/2/lima.wav';
+import c2_miliar from './clips/2/miliar.wav';
+import c2_nol from './clips/2/nol.wav';
+import c2_paydia from './clips/2/paydia.wav';
+import c2_puluh from './clips/2/puluh.wav';
+import c2_ratus from './clips/2/ratus.wav';
+import c2_ribu from './clips/2/ribu.wav';
+import c2_rupiah from './clips/2/rupiah.wav';
+import c2_satu from './clips/2/satu.wav';
+import c2_sebelas from './clips/2/sebelas.wav';
+import c2_sembilan from './clips/2/sembilan.wav';
+import c2_sepuluh from './clips/2/sepuluh.wav';
+import c2_seratus from './clips/2/seratus.wav';
+import c2_seribu from './clips/2/seribu.wav';
+import c2_tiga from './clips/2/tiga.wav';
+import c2_tujuh from './clips/2/tujuh.wav';
+export const CLIPS = {
+  '1': { belas: c1_belas, delapan: c1_delapan, diterima: c1_diterima, dua: c1_dua, empat: c1_empat, enam: c1_enam, juta: c1_juta, lima: c1_lima, miliar: c1_miliar, nol: c1_nol, paydia: c1_paydia, puluh: c1_puluh, ratus: c1_ratus, ribu: c1_ribu, rupiah: c1_rupiah, satu: c1_satu, sebelas: c1_sebelas, sembilan: c1_sembilan, sepuluh: c1_sepuluh, seratus: c1_seratus, seribu: c1_seribu, tiga: c1_tiga, tujuh: c1_tujuh },
+  '2': { belas: c2_belas, delapan: c2_delapan, diterima: c2_diterima, dua: c2_dua, empat: c2_empat, enam: c2_enam, juta: c2_juta, lima: c2_lima, miliar: c2_miliar, nol: c2_nol, paydia: c2_paydia, puluh: c2_puluh, ratus: c2_ratus, ribu: c2_ribu, rupiah: c2_rupiah, satu: c2_satu, sebelas: c2_sebelas, sembilan: c2_sembilan, sepuluh: c2_sepuluh, seratus: c2_seratus, seribu: c2_seribu, tiga: c2_tiga, tujuh: c2_tujuh },
+};

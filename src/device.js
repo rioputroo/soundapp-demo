@@ -5,7 +5,7 @@
 //             → cek ulang (server) → putar → kirim hasil (retry sampai diterima server)
 // =============================================================================
 import { clock, on, fact, narrate, rupiah, sleep, uid } from './core.js';
-import { speak } from './audio.js';
+import { speakAmount } from './nominal.js';
 import * as srv from './server.js';
 
 const DAY = 864e5;
@@ -83,7 +83,7 @@ export function createDevice() {
     if (!dev.alive || dev.inCall || !dev.soundOn || dev.speaking || dev.ad?.stage === 'PLAYING') return notify();
     const item = dev.voiceQueue.shift();
     if (!item) return startQuiet();
-    const sp = speak(`Pembayaran diterima, ${item.amount} rupiah`);
+    const sp = speakAmount(item.amount, (e) => say(`Suara pembayaran gagal dibuat: ${e.message}`, { tone: 'warn' }));
     const me = { ...item, cancel: sp.cancel };
     dev.speaking = me;
     say(`🔊 Membacakan "Pembayaran diterima ${rupiah(item.amount)}"`, { tone: 'pay' });
@@ -465,13 +465,22 @@ export function createDevice() {
       notify();
     },
     // Event dari FCM sungguhan (backend → Firebase → HP)
-    receiveExternal(e) {
-      if (!dev.account) return say('Event FCM diterima tetapi belum ada akun login → diabaikan.', { tone: 'warn' });
-      if (!e.txId || !Number.isFinite(e.amount)) return say('Event FCM tidak lengkap (butuh txId, amount, status) → diabaikan.', { tone: 'warn' });
+    // Event dari FCM sungguhan. Mengembalikan keterangan hasil untuk log FCM.
+    receiveExternal(e, raw) {
+      const out = (msg, tone = 'muted') => { say(msg, { tone }); return msg; };
+      if (!e) return out(`Pesan FCM dengan topic "${raw?.topic}" bukan transaksi → diabaikan.`);
+      if (!dev.account) return out('Event FCM diterima tetapi belum ada akun login → diabaikan.', 'warn');
+      if (!e.txId || !Number.isFinite(e.amount)) return out('Event FCM tidak lengkap (butuh refid/txId dan amount) → diabaikan.', 'warn');
+      const dup = dev.seenTx.has(e.txId);
       // Backend tidak mengirim MID: event dianggap untuk merchant akun yang sedang login di HP ini.
       e = { ...e, mid: dev.account.mid };
       srv.injectTransaction(e);
       onFirebaseEvent(e);
+      if (dup) return 'Diabaikan: refid sudah pernah diterima (duplikat)';
+      if (e.status !== 'SUKSES') return `Dicatat, tidak dibacakan (status ${e.status})`;
+      if (!dev.soundOn) return 'Dicatat, tidak dibacakan (notifikasi suara OFF)';
+      if (dev.inCall) return 'Dicatat, tidak dibacakan (sedang telepon)';
+      return 'Diterima → masuk antrean suara pembayaran';
     },
     cfg, uid,
   };

@@ -6,7 +6,8 @@ import { mountPhone } from './phone-ui.js';
 import { mountFlow } from './flow-ui.js';
 import { mountAdmin } from './admin-ui.js';
 import { mountGuide } from './guide.js';
-import { fcm, enableFcm, onFcmChange } from './fcm.js';
+import { setVoiceType, voice, speakAmount, angkaKeToken } from './nominal.js';
+import { fcm, enableFcm, onFcmChange, addFcmLog, clearFcmLog } from './fcm.js';
 
 const $ = (id) => document.getElementById(id);
 srv.resetServer();
@@ -28,17 +29,31 @@ document.querySelector('.tabs').addEventListener('click', (e) => { const b = e.t
 
 // ------------------------------------------------------------ FCM
 const STATUS = { off: 'Belum aktif', connecting: 'Menghubungkan…', on: 'Terhubung', error: 'Gagal' };
+window.demo.fcmMessage = onFcmMessage; // untuk uji tanpa FCM sungguhan
+function onFcmMessage(ev, raw, source) {
+  narrate('firebase', `Pesan FCM masuk (${source}): ${JSON.stringify(raw)}`);
+  addFcmLog({ source, raw, outcome: app.receiveExternal(ev, raw) });
+}
+function fcmLogHtml() {
+  const rows = fcm.log.map((l) => `<tr><td class="num">${fmtTime(l.at)}</td><td>${esc(l.source)}</td><td><code>${esc(JSON.stringify(l.raw))}</code></td><td>${esc(l.outcome)}</td></tr>`).join('');
+  return `<div class="row-btns left" style="margin-top:10px"><b>Log pesan FCM masuk (${fcm.log.length})</b>${fcm.log.length ? '<button type="button" class="btn ghost sm" id="fcm-clear">Bersihkan</button>' : ''}</div>
+    <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Waktu</th><th>Diterima saat</th><th>Data</th><th>Hasil</th></tr></thead><tbody>${rows || '<tr><td colspan="4" class="empty">Belum ada pesan masuk.</td></tr>'}</tbody></table></div>`;
+}
 function fcmCard() {
   return `<div class="kv"><span>Status</span><b>${STATUS[fcm.status]}</b></div>
     <label class="pfield"><span>VAPID key (Web Push certificate)</span><div class="pin"><input type="text" id="fcm-vapid" value="${esc(fcm.vapid)}" placeholder="B…" /></div></label>
     ${fcm.error ? `<p class="note">${esc(fcm.error)}</p>` : ''}
     ${fcm.token ? `<label class="pfield"><span>FCM token (kirim data message ke token ini)</span><div class="pin"><input type="text" id="fcm-token" readonly value="${esc(fcm.token)}" /></div></label>` : ''}
     <div class="row-btns left"><button class="btn primary" id="fcm-on">${fcm.token ? 'Ambil token ulang' : 'Aktifkan FCM'}</button>${fcm.token ? '<button class="btn" id="fcm-copy">Salin token</button>' : ''}</div>
-    <small class="sub">Login dulu di HP dengan salah satu akun demo. Data message harus berisi txId, amount, dan status (SUKSES). mid tidak diperlukan, event dianggap untuk akun yang login.</small>`;
+    ${fcmLogHtml()}
+    <small class="sub">Login dulu di HP dengan salah satu akun demo. Data message harus berisi topic=transaction, refid (ID transaksi), dan amount. status dan mid tidak diperlukan: pesan dianggap pembayaran sukses untuk akun yang login.</small>`;
 }
 onFcmChange(() => { const c = $('fcm-card'); if (c) c.innerHTML = fcmCard(); });
+$('params').addEventListener('change', (e) => { if (e.target.id === 'voice-type') { setVoiceType(e.target.value); narrate('demo', `Jenis suara pembayaran: ${e.target.value === '1' ? 'Formal Pria' : 'Formal Wanita'}.`); } });
 $('params').addEventListener('click', (e) => {
-  if (e.target.id === 'fcm-on') enableFcm($('fcm-vapid').value.trim(), (ev) => app.receiveExternal(ev));
+  if (e.target.id === 'voice-test') { unlockAudio(); speakAmount(25000); narrate('demo', `Contoh suara: ${angkaKeToken(25000).join(' ')}.`); }
+  if (e.target.id === 'fcm-on') enableFcm($('fcm-vapid').value.trim(), onFcmMessage);
+  if (e.target.id === 'fcm-clear') clearFcmLog();
   if (e.target.id === 'fcm-copy') navigator.clipboard?.writeText(fcm.token).then(() => narrate('demo', 'FCM token disalin.'));
 });
 
@@ -56,6 +71,10 @@ function renderParams() {
       ${field('sessionTimeoutMin', 'Batas sesi tidak aktif', 'menit', 'PRD menyebut batas ini, nilainya belum ditetapkan')}
       <div class="row-btns"><button type="button" class="btn" id="p-reset">Kembalikan nilai PRD</button><button class="btn primary">Simpan parameter</button></div>
     </form>
+    <div class="adm-h"><h3>Suara pembayaran</h3></div>
+    <div class="dcard"><label class="pfield"><span>Jenis suara (sama dengan aplikasi merchant)</span><div class="pin"><select id="voice-type"><option value="1" ${voice.type === '1' ? 'selected' : ''}>1 · Formal Pria</option><option value="2" ${voice.type === '2' ? 'selected' : ''}>2 · Formal Wanita</option></select></div></label>
+      <div class="row-btns left"><button type="button" class="btn" id="voice-test">Coba suara (Rp 25.000)</button></div>
+      <small class="sub">Memakai klip rekaman asli dari audio-nominal-rn 0.12.0: nominal → kata → klip digabung, jeda 30 ms, diakhiri "rupiah diterima paydia".</small></div>
     <div class="adm-h"><h3>Firebase FCM (backend asli)</h3></div>
     <div class="dcard" id="fcm-card">${fcmCard()}</div>
     <div class="adm-h"><h3>Syarat &amp; Ketentuan</h3></div>

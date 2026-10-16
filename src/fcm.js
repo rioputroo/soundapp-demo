@@ -16,18 +16,26 @@ export const FIREBASE_CONFIG = {
 };
 
 export const VAPID_KEY = 'BM02iuKzt3sBYEXkjAV2_LtB1Bw7AiNK42TlKCOUJEy1Q-An5oXrIKFyf-YMngYZyosLqs2XptvktP2sQqKZzio'; // kunci publik
-export const fcm = { status: 'off', token: '', error: '', vapid: VAPID_KEY };
+export const fcm = { status: 'off', token: '', error: '', vapid: VAPID_KEY, log: [] };
 try { fcm.vapid = localStorage.getItem('fcm.vapid') || VAPID_KEY; } catch { /* */ }
 const listeners = new Set();
 export const onFcmChange = (fn) => { listeners.add(fn); return () => listeners.delete(fn); };
 const set = (patch) => { Object.assign(fcm, patch); listeners.forEach((f) => f()); };
 
 // Data message FCM selalu bertipe string → ubah ke bentuk event yang dipakai aplikasi.
+// Format backend: { topic: 'transaction', refid, title, body, amount }. refid = ID transaksi; pesan
+// topic 'transaction' berarti pembayaran sudah diterima, jadi status default SUKSES.
 export function toEvent(d = {}) {
-  return { eventId: d.eventId || d.txId, txId: d.txId, mid: d.mid, amount: Number(d.amount), status: String(d.status || '').toUpperCase(), txTime: d.txTime ? Number(d.txTime) || Date.parse(d.txTime) : Date.now() };
+  if (d.topic && d.topic !== 'transaction') return null;
+  const txId = d.txId || d.refid;
+  return { eventId: txId, txId, mid: d.mid, amount: Number(d.amount), status: String(d.status || 'SUKSES').toUpperCase(), txTime: Date.now() };
 }
 
 let started = false;
+// Log pesan FCM yang masuk (terbaru di atas, maks 50).
+export function addFcmLog(entry) { fcm.log.unshift({ at: Date.now(), ...entry }); fcm.log.length = Math.min(fcm.log.length, 50); set({}); }
+export function clearFcmLog() { fcm.log = []; set({}); }
+
 export async function enableFcm(vapidKey, deliver) {
   if (!vapidKey) return set({ status: 'error', error: 'VAPID key belum diisi.' });
   if (!('serviceWorker' in navigator) || !('Notification' in window)) return set({ status: 'error', error: 'Browser ini tidak mendukung web push. Buka lewat https (bukan file://).' });
@@ -42,8 +50,8 @@ export async function enableFcm(vapidKey, deliver) {
     if (!token) return set({ status: 'error', error: 'Token tidak diterima dari FCM.' });
     if (!started) {
       started = true;
-      onMessage(messaging, (p) => deliver(toEvent(p.data))); // tab sedang aktif
-      navigator.serviceWorker.addEventListener('message', (m) => { if (m.data?.type === 'fcm-data') deliver(toEvent(m.data.data)); }); // tab di latar
+      onMessage(messaging, (p) => deliver(toEvent(p.data), p.data, 'tab aktif')); // tab sedang aktif
+      navigator.serviceWorker.addEventListener('message', (m) => { if (m.data?.type === 'fcm-data') deliver(toEvent(m.data.data), m.data.data, 'latar belakang'); }); // tab di latar
     }
     set({ status: 'on', token });
   } catch (e) { set({ status: 'error', error: e.message || String(e) }); }
