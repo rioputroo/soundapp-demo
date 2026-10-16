@@ -1,0 +1,70 @@
+<title>SoundApps Iklan Demo</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>/*__CSS__*/</style>
+
+<header class="top">
+  <div class="top-in">
+    <div class="brand"><span class="wordmark">paydia</span><div><b>SoundApps Iklan</b><span>Demo flow Fase 1 · sesuai PRD</span></div></div>
+    <div class="timebar">
+      <span class="clock-l">Waktu demo</span><span id="clock" class="clock">--:--:-- WIB</span>
+      <div class="timebtns" role="group" aria-label="Majukan waktu demo">
+        <button data-adv="10000">+10 dtk</button><button data-adv="30000">+30 dtk</button><button data-adv="60000">+1 mnt</button><button data-adv="86400000">+1 hari</button>
+      </div>
+      <button id="reset" class="btn ghost sm">Reset demo</button>
+    </div>
+  </div>
+</header>
+
+<main class="layout">
+  <aside id="guide" class="guide" aria-label="Panduan"></aside>
+
+  <section class="device" aria-label="HP merchant">
+    <div class="phone"><div id="screen" class="screen"></div></div>
+    <div class="panel">
+      <h3>Panel simulasi</h3>
+      <div id="controls" class="controls"></div>
+    </div>
+    <div class="panel">
+      <h3>Di dalam aplikasi <span class="sub">tidak terlihat oleh merchant</span></h3>
+      <div id="internals" class="internals"></div>
+    </div>
+  </section>
+
+  <section class="side">
+    <div class="tabs" role="tablist">
+      <button data-tab="flow" class="on" role="tab" aria-selected="true">Alur</button>
+      <button data-tab="admin" role="tab" aria-selected="false">Dashboard Admin</button>
+      <button data-tab="params" role="tab" aria-selected="false">Parameter</button>
+    </div>
+    <div id="tab-flow" class="tabpanel">
+      <div class="flow-bar">
+        <div id="flow-filter" class="seg sm" role="group" aria-label="Saring alur">
+          <button data-f="all" class="on">Semua</button><button data-f="hp">HP</button><button data-f="firebase">Firebase</button><button data-f="server">Server</button><button data-f="admin">Dashboard</button>
+        </div>
+        <button id="flow-clear" class="btn ghost sm">Bersihkan</button>
+      </div>
+      <ol id="flow-list" class="flow" aria-live="polite"></ol>
+    </div>
+    <div id="tab-admin" class="tabpanel" hidden><div id="admin" class="admin"></div></div>
+    <div id="tab-params" class="tabpanel" hidden><div id="params" class="admin"></div></div>
+  </section>
+</main>
+
+<div id="intro" class="intro">
+  <div class="intro-card">
+    <span class="wordmark">paydia</span>
+    <h1>Demo SoundApps Iklan</h1>
+    <p>Simulasi lengkap alur <b>suara pembayaran → jeda 0,5 detik → iklan</b> beserta edge case-nya, hanya memakai aturan yang tertulis di PRD Fase 1.</p>
+    <ol>
+      <li><b>Panduan</b> (kiri): pilih skenario, lalu jalankan otomatis atau coba sendiri. Checklist tercentang saat kejadiannya terjadi.</li>
+      <li><b>HP merchant</b> (tengah): aplikasi yang mendengarkan event pembayaran. Kondisi HP diatur di Panel simulasi.</li>
+      <li><b>Alur & Dashboard</b> (kanan): cerita langkah demi langkah antara HP, Firebase, dan Server, plus Manajemen Iklan, Approval, dan Log.</li>
+    </ol>
+    <p class="sub">Nyalakan suara perangkat Anda. Backend dan Firebase disimulasikan di browser.</p>
+    <button id="start" class="btn primary lg">Mulai demo</button>
+  </div>
+</div>
+<script>/*__JS__*/</script>

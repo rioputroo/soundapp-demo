@@ -1,0 +1,21 @@
+{
+  "name": "soundapps-web-demo",
+  "version": "1.0.0",
+  "description": "Web demo SoundApps Iklan Fase 1 (sesuai PRD)",
+  "scripts": {
+    "build": "node build.mjs",
+    "deploy": "wrangler deploy",
+    "preview": "wrangler dev"
+  },
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "esbuild": "^0.24.2",
+    "wrangler": "^4.151.0"
+  },
+  "dependencies": {
+    "firebase": "^10.14.1",
+    "morphdom": "^2.7.4",
+    "qrcode-generator": "^2.0.4"
+  },
+  "private": true
+}
